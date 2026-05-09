@@ -12,7 +12,7 @@ export class AdminService {
     ) { }
 
     async create(email: string, password: string): Promise<Admin> {
-        const exists = await this.adminRepo.findOne({ where: { email } });
+        const exists = await this.findByEmail(email);
         if (exists) throw new ConflictException('Admin already exists');
 
         const admin = this.adminRepo.create({ email, password });

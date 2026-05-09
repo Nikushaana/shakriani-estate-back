@@ -5,6 +5,11 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AwardModule } from './award/award.module';
+import { BlogModule } from './blog/blog.module';
+import { WineModule } from './wine/wine.module';
+import { OrderModule } from './order/order.module';
+import { BannerVideoModule } from './banner-video/banner-video.module';
 
 @Module({
   imports: [
@@ -42,7 +47,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }
       },
     }),
-    AdminModule, AuthModule],
+    AdminModule, AuthModule, AwardModule, BlogModule, WineModule, OrderModule, BannerVideoModule],
   controllers: [AppController],
   providers: [AppService],
 })
