@@ -14,6 +14,9 @@ export class BannerVideo {
     @Column()
     video: string;
 
+    @Column()
+    video_public_id: string;
+
     @CreateDateColumn()
     created_at: Date;
 

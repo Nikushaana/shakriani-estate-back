@@ -2,18 +2,20 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannerVideo } from './entity/banner-video.entity';
 import { Repository } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class BannerVideoService {
     constructor(
         @InjectRepository(BannerVideo)
         private readonly bannerVideoRepo: Repository<BannerVideo>,
+
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
     async create(data: {
         video: string;
+        video_public_id: string;
     }) {
         const bannerVideo = this.bannerVideoRepo.create(data);
 
@@ -37,15 +39,11 @@ export class BannerVideoService {
             throw new NotFoundException('Banner video not found');
         }
 
-        if (bannerVideo.video) {
-            const oldPath = path.join(
-                process.cwd(),
-                bannerVideo.video,
+        if (bannerVideo.video_public_id) {
+            await this.cloudinaryService.deleteFile(
+                bannerVideo.video_public_id,
+                'video',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         await this.bannerVideoRepo.remove(bannerVideo);

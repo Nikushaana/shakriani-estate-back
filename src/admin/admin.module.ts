@@ -10,6 +10,7 @@ import { BlogModule } from 'src/blog/blog.module';
 import { WineModule } from 'src/wine/wine.module';
 import { OrderModule } from 'src/order/order.module';
 import { BannerVideoModule } from 'src/banner-video/banner-video.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { BannerVideoModule } from 'src/banner-video/banner-video.module';
     BlogModule,
     WineModule,
     OrderModule,
-    BannerVideoModule
+    BannerVideoModule,
+    CloudinaryModule
   ],
   providers: [AdminService],
   controllers: [AdminController],

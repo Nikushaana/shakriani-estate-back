@@ -6,19 +6,21 @@ import {
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Blog } from './entity/blog.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class BlogsService {
     constructor(
         @InjectRepository(Blog)
         private readonly blogRepo: Repository<Blog>,
+
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
     async create(data: {
         image: string;
+        image_public_id: string;
         image_alt: string;
         small_text: string;
         text: string;
@@ -65,6 +67,7 @@ export class BlogsService {
         slug: string,
         data: {
             image?: string;
+            image_public_id?: string;
             image_alt?: string;
             small_text?: string;
             text?: string;
@@ -87,15 +90,11 @@ export class BlogsService {
             }
         }
 
-        if (data.image && blog.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                blog.image,
+        if (data.image_public_id && blog.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                blog.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         const updatedBlog = this.blogRepo.merge(
@@ -107,17 +106,13 @@ export class BlogsService {
     }
 
     async delete(slug: string) {
-    const blog = await this.findOne(slug);
+        const blog = await this.findOne(slug);
 
-        if (blog.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                blog.image,
+        if (blog.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                blog.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         await this.blogRepo.remove(blog);

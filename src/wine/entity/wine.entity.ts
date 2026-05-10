@@ -14,6 +14,9 @@ export class Wine {
     @Column()
     image: string;
 
+    @Column()
+    image_public_id: string;
+
     @Column('text')
     image_alt: string;
 
@@ -22,25 +25,25 @@ export class Wine {
 
     @Column('text')
     type: string;
-    
+
     @Column('text')
     year: string;
-    
+
     @Column('text')
     price: string;
-    
+
     @Column('text')
     description: string;
-    
+
     @Column('text')
     alc: string;
-    
+
     @Column('text')
     vol: string;
-    
+
     @Column('text')
     origin: string;
-    
+
     @Column('text')
     serve: string;
 

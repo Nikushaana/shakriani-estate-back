@@ -36,4 +36,14 @@ export class OrdersService {
 
         return order;
     }
+
+    async delete(id: string) {
+        const order = await this.findOne(id);
+
+        await this.orderRepo.remove(order);
+
+        return {
+            message: 'Order deleted successfully',
+        };
+    }
 }

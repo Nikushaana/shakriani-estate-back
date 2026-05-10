@@ -2,18 +2,20 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wine } from './entity/wine.entity';
 import { Repository } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class WinesService {
     constructor(
         @InjectRepository(Wine)
         private readonly wineRepo: Repository<Wine>,
+
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
     async create(data: {
         image: string;
+        image_public_id: string;
         image_alt: string;
         name: string;
         type: string;
@@ -67,6 +69,7 @@ export class WinesService {
         slug: string,
         data: {
             image?: string;
+            image_public_id?: string;
             image_alt?: string;
             name?: string;
             type?: string;
@@ -96,15 +99,11 @@ export class WinesService {
             }
         }
 
-        if (data.image && wine.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                wine.image,
+        if (data.image_public_id && wine.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                wine.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         const updatedWine = this.wineRepo.merge(
@@ -118,15 +117,11 @@ export class WinesService {
     async delete(slug: string) {
         const wine = await this.findOne(slug);
 
-        if (wine.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                wine.image,
+        if (wine.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                wine.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         await this.wineRepo.remove(wine);

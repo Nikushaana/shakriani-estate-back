@@ -14,6 +14,9 @@ export class Award {
     @Column()
     image: string;
 
+    @Column()
+    image_public_id: string;
+
     @Column('text')
     text: string;
 

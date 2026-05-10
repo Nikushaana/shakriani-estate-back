@@ -15,6 +15,8 @@ import { UpdateWineDto } from 'src/wine/dto/update-wine.dto';
 import { CreateWineDto } from 'src/wine/dto/create-wine.dto';
 import { OrdersService } from 'src/order/order.service';
 import { BannerVideoService } from 'src/banner-video/banner-video.service';
+import { multerConfig } from 'src/common/upload/multer.config';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard)
@@ -25,7 +27,8 @@ export class AdminController {
         private readonly blogsService: BlogsService,
         private readonly winesService: WinesService,
         private readonly ordersService: OrdersService,
-        private readonly bannerVideoService: BannerVideoService
+        private readonly bannerVideoService: BannerVideoService,
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
     @Get('')
@@ -35,18 +38,7 @@ export class AdminController {
 
     @Post('awards')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/awards',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async createAward(
         @UploadedFile() file: Express.Multer.File,
@@ -56,8 +48,14 @@ export class AdminController {
             throw new BadRequestException('Image file is required');
         }
 
+        const upload = await this.cloudinaryService.uploadFile(
+            file,
+            'shakriani-estate/awards',
+        );
+
         return this.awardsService.create({
-            image: `/uploads/awards/${file.filename}`,
+            image: upload.secure_url,
+            image_public_id: upload.public_id,
             text: dto.text,
         });
     }
@@ -76,18 +74,7 @@ export class AdminController {
 
     @Patch('awards/:id')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/awards',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async updateAward(
         @Param('id') id: string,
@@ -99,8 +86,15 @@ export class AdminController {
         };
 
         if (file) {
-            updateData.image = `/uploads/awards/${file.filename}`;
+            const upload = await this.cloudinaryService.uploadFile(
+                file,
+                'shakriani-estate/awards',
+            );
+
+            updateData.image = upload.secure_url;
+            updateData.image_public_id = upload.public_id;
         }
+
         return this.awardsService.update(
             id,
             updateData
@@ -116,18 +110,7 @@ export class AdminController {
 
     @Post('blogs')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/blogs',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async createBlog(
         @UploadedFile() file: Express.Multer.File,
@@ -137,8 +120,14 @@ export class AdminController {
             throw new BadRequestException('Image file is required');
         }
 
+        const upload = await this.cloudinaryService.uploadFile(
+            file,
+            'shakriani-estate/blogs',
+        );
+
         return this.blogsService.create({
-            image: `/uploads/blogs/${file.filename}`,
+            image: upload.secure_url,
+            image_public_id: upload.public_id,
             ...dto,
         });
     }
@@ -157,18 +146,7 @@ export class AdminController {
 
     @Patch('blogs/:slug')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/blogs',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async updateBlog(
         @Param('slug') slug: string,
@@ -178,7 +156,13 @@ export class AdminController {
         const updateData: any = { ...dto };
 
         if (file) {
-            updateData.image = `/uploads/blogs/${file.filename}`;
+            const upload = await this.cloudinaryService.uploadFile(
+                file,
+                'shakriani-estate/blogs',
+            );
+
+            updateData.image = upload.secure_url;
+            updateData.image_public_id = upload.public_id;
         }
 
         return this.blogsService.update(
@@ -196,18 +180,7 @@ export class AdminController {
 
     @Post('wines')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/wines',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async createWine(
         @UploadedFile() file: Express.Multer.File,
@@ -217,8 +190,14 @@ export class AdminController {
             throw new BadRequestException('Image file is required');
         }
 
+        const upload = await this.cloudinaryService.uploadFile(
+            file,
+            'shakriani-estate/wines',
+        );
+
         return this.winesService.create({
-            image: `/uploads/wines/${file.filename}`,
+            image: upload.secure_url,
+            image_public_id: upload.public_id,
             ...dto,
         });
     }
@@ -237,18 +216,7 @@ export class AdminController {
 
     @Patch('wines/:slug')
     @UseInterceptors(
-        FileInterceptor('image', {
-            storage: diskStorage({
-                destination: './uploads/wines',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('image', multerConfig),
     )
     async updateWine(
         @Param('slug') slug: string,
@@ -258,7 +226,13 @@ export class AdminController {
         const updateData: any = { ...dto };
 
         if (file) {
-            updateData.image = `/uploads/wines/${file.filename}`;
+            const upload = await this.cloudinaryService.uploadFile(
+                file,
+                'shakriani-estate/wines',
+            );
+
+            updateData.image = upload.secure_url;
+            updateData.image_public_id = upload.public_id;
         }
 
         return this.winesService.update(
@@ -286,20 +260,17 @@ export class AdminController {
         return this.ordersService.findOne(id);
     }
 
+    @Delete('orders/:id')
+    async deleteOrder(
+        @Param('id') id: string,
+    ) {
+        return this.ordersService.delete(id);
+    }
+
+    // bannerVideo
     @Post('bannerVideos')
     @UseInterceptors(
-        FileInterceptor('video', {
-            storage: diskStorage({
-                destination: './uploads/bannerVideo',
-                filename: (req, file, callback) => {
-                    const uniqueName =
-                        Date.now() +
-                        extname(file.originalname);
-
-                    callback(null, uniqueName);
-                },
-            }),
-        }),
+        FileInterceptor('video', multerConfig),
     )
     async createBannerVideo(
         @UploadedFile() file: Express.Multer.File
@@ -308,8 +279,14 @@ export class AdminController {
             throw new BadRequestException('Video file is required');
         }
 
+        const upload = await this.cloudinaryService.uploadFile(
+            file,
+            'shakriani-estate/bannerVideos',
+        );
+
         return this.bannerVideoService.create({
-            video: `/uploads/bannerVideo/${file.filename}`,
+            video: upload.secure_url,
+            video_public_id: upload.public_id,
         });
     }
 

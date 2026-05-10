@@ -5,19 +5,21 @@ import {
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Award } from './entity/award.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class AwardsService {
     constructor(
         @InjectRepository(Award)
         private readonly awardRepo: Repository<Award>,
+
+        private readonly cloudinaryService: CloudinaryService
     ) { }
 
     async create(data: {
         image: string;
+        image_public_id: string;
         text: string;
     }) {
         const award = this.awardRepo.create(data);
@@ -49,20 +51,17 @@ export class AwardsService {
         id: string,
         data: {
             image?: string;
+            image_public_id?: string;
             text?: string;
         },
     ) {
         const award = await this.findOne(id);
 
-        if (data.image && award.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                award.image,
+        if (data.image_public_id && award.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                award.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         const updatedAward = this.awardRepo.merge(
@@ -76,15 +75,11 @@ export class AwardsService {
     async delete(id: string) {
         const award = await this.findOne(id);
 
-        if (award.image) {
-            const oldPath = path.join(
-                process.cwd(),
-                award.image,
+        if (award.image_public_id) {
+            await this.cloudinaryService.deleteFile(
+                award.image_public_id,
+                'image',
             );
-
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
         }
 
         await this.awardRepo.remove(award);

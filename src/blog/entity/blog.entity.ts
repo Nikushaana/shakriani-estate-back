@@ -14,6 +14,9 @@ export class Blog {
     @Column()
     image: string;
 
+    @Column()
+    image_public_id: string;
+
     @Column('text')
     image_alt: string;
 
