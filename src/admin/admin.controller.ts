@@ -257,7 +257,7 @@ export class AdminController {
     }
 
     @Delete('orders/:id')
-    async deleteOrder(
+    async deleteOrder( 
         @Param('id') id: string,
     ) {
         return this.ordersService.delete(id);
