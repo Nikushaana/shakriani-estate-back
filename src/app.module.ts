@@ -9,7 +9,6 @@ import { AwardModule } from './award/award.module';
 import { BlogModule } from './blog/blog.module';
 import { WineModule } from './wine/wine.module';
 import { OrderModule } from './order/order.module';
-import { BannerVideoModule } from './banner-video/banner-video.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
@@ -48,7 +47,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
         }
       },
     }),
-    AdminModule, AuthModule, AwardModule, BlogModule, WineModule, OrderModule, BannerVideoModule, CloudinaryModule],
+    AdminModule, AuthModule, AwardModule, BlogModule, WineModule, OrderModule, CloudinaryModule],
   controllers: [AppController],
   providers: [AppService],
 })

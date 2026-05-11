@@ -2,8 +2,6 @@ import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post,
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { AdminService } from './admin.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { AwardsService } from 'src/award/award.service';
 import { CreateAwardDto } from 'src/award/dto/create-award.dto';
 import { UpdateAwardDto } from 'src/award/dto/update-award.dto';
@@ -14,7 +12,6 @@ import { WinesService } from 'src/wine/wine.service';
 import { UpdateWineDto } from 'src/wine/dto/update-wine.dto';
 import { CreateWineDto } from 'src/wine/dto/create-wine.dto';
 import { OrdersService } from 'src/order/order.service';
-import { BannerVideoService } from 'src/banner-video/banner-video.service';
 import { multerConfig } from 'src/common/upload/multer.config';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
@@ -27,7 +24,6 @@ export class AdminController {
         private readonly blogsService: BlogsService,
         private readonly winesService: WinesService,
         private readonly ordersService: OrdersService,
-        private readonly bannerVideoService: BannerVideoService,
         private readonly cloudinaryService: CloudinaryService
     ) { }
 
@@ -265,40 +261,5 @@ export class AdminController {
         @Param('id') id: string,
     ) {
         return this.ordersService.delete(id);
-    }
-
-    // bannerVideo
-    @Post('bannerVideos')
-    @UseInterceptors(
-        FileInterceptor('video', multerConfig),
-    )
-    async createBannerVideo(
-        @UploadedFile() file: Express.Multer.File
-    ) {
-        if (!file) {
-            throw new BadRequestException('Video file is required');
-        }
-
-        const upload = await this.cloudinaryService.uploadFile(
-            file,
-            'shakriani-estate/bannerVideos',
-        );
-
-        return this.bannerVideoService.create({
-            video: upload.secure_url,
-            video_public_id: upload.public_id,
-        });
-    }
-
-    @Get('bannerVideos')
-    async getBannerVideos() {
-        return this.bannerVideoService.findAll();
-    }
-
-    @Delete('bannerVideos/:id')
-    async deleteBannerVideos(
-        @Param('id') id: string,
-    ) {
-        return this.bannerVideoService.delete(id);
     }
 }

@@ -9,7 +9,6 @@ import { AwardModule } from 'src/award/award.module';
 import { BlogModule } from 'src/blog/blog.module';
 import { WineModule } from 'src/wine/wine.module';
 import { OrderModule } from 'src/order/order.module';
-import { BannerVideoModule } from 'src/banner-video/banner-video.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
@@ -21,7 +20,6 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     BlogModule,
     WineModule,
     OrderModule,
-    BannerVideoModule,
     CloudinaryModule
   ],
   providers: [AdminService],
