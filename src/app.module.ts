@@ -26,7 +26,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
         if (isProduction) {
           return {
             type: 'postgres',
-            url: config.get<string>('DATABASE_URL'),
+            url: config.get<string>('DATABASE_URL'), 
             ssl: {
               rejectUnauthorized: false,
             },
