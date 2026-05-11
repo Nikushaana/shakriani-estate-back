@@ -19,6 +19,12 @@ export class Award {
 
     @Column('text')
     text: string;
+    
+    @Column('text')
+    text_en: string;
+    
+    @Column('text')
+    text_ru: string;
 
     @CreateDateColumn()
     created_at: Date;
